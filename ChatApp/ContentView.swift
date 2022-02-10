@@ -21,58 +21,15 @@ struct ContentView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    Picker("Picker", selection: $isLoginMode) {
-                        Text("Log In")
-                            .tag(true)
-                        Text("Create Account")
-                            .tag(false)
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
+                    loginPicker
                     
-                    if !isLoginMode {
-                        Button {
-                            isShowingImagePicker.toggle()
-                        } label: {
-                            
-                            if let image = image {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 128, height: 128)
-                                    .cornerRadius(64)
-                            } else {
-                                Image(systemName: "person.fill")
-                                    .font(.system(size: 64))
-                                    .padding()
-                            }
-                        }
-                        .overlay(RoundedRectangle(cornerRadius: 64)
-                                    .stroke(.black ,lineWidth: 3)
-                        )
-                        
-                    }
+                    if !isLoginMode { iconButton }
                     
-                    Group {
-                        TextField("Email", text: $email)
-                            .keyboardType(.emailAddress)
-                            //.textInputAutocapitalization(nil)
-                            .autocapitalization(.none)
-                        
-                        SecureField("Password", text: $password)
-                    }
-                    .padding()
-                    .background(.white)
+                    loginInput
                     
                     HStack {
                         Spacer()
-                        Button {
-                            handleAction()
-                        } label: {
-                            Text(isLoginMode ? "Log In" : "Create Account")
-                                .foregroundColor(.white)
-                                .padding()
-                                .font(.system(size: 14, weight: .bold))
-                        }
+                        loginButton
                         Spacer()
                     }
                     .background(.blue)
@@ -89,6 +46,63 @@ struct ContentView: View {
         .fullScreenCover(isPresented: $isShowingImagePicker) {
             ImagePicker(image: $image)
                 .ignoresSafeArea()
+        }
+    }
+    
+    var loginPicker: some View {
+        Picker("Picker", selection: $isLoginMode) {
+            Text("Log In")
+                .tag(true)
+            Text("Create Account")
+                .tag(false)
+        }
+        .pickerStyle(SegmentedPickerStyle())
+    }
+    
+    var iconButton: some View {
+        Button {
+            isShowingImagePicker.toggle()
+        } label: {
+            
+            if let image = image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 128, height: 128)
+                    .cornerRadius(64)
+            } else {
+                Image(systemName: "person.fill")
+                    .foregroundColor(.black)
+                    .font(.system(size: 64))
+                    .padding()
+            }
+        }
+        .overlay(RoundedRectangle(cornerRadius: 64)
+                    .stroke(.black ,lineWidth: 3)
+        )
+    }
+    
+    var loginInput: some View {
+        Group {
+            TextField("Email", text: $email)
+                .keyboardType(.emailAddress)
+                //.textInputAutocapitalization(nil)
+                .autocapitalization(.none)
+            
+            SecureField("Password", text: $password)
+        }
+        .padding()
+        .background(.white)
+    }
+    
+    var loginButton: some View {
+        Button {
+            handleAction()
+        } label: {
+            Text(isLoginMode ? "Log In" : "Create Account")
+                .foregroundColor(.white)
+                .padding()
+                .font(.system(size: 14, weight: .bold))
         }
     }
     
@@ -145,10 +159,24 @@ struct ContentView: View {
                 self.message = "Successfully stored image with url: \(url?.absoluteString ?? "")"
                 print(url?.absoluteString)
                 
+                guard let url = url else { return }
+                self.storeUserInformation(imageProfileUrl: url)
+                
             }
-            
         }
-        
+    }
+    
+    private func storeUserInformation(imageProfileUrl: URL) {
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+        let userData = ["email": self.email, "uid": uid, "profileImageUrl": imageProfileUrl.absoluteString]
+        FirebaseManager.shared.firestore.collection("users").document(uid).setData(userData) { error in
+            if let error = error {
+                print(error)
+                self.message = "\(error)"
+                return
+            }
+            print("Success")
+        }
     }
     
  }
