@@ -8,7 +8,10 @@
 import SwiftUI
 
 
-struct ContentView: View {
+struct LoginView: View {
+    
+    let didCompleteLoginProcess: () -> ()
+    
     @State private var isLoginMode = false
     @State private var email = ""
     @State private var password = ""
@@ -24,6 +27,7 @@ struct ContentView: View {
                     loginPicker
                     
                     if !isLoginMode { iconButton }
+                    
                     
                     loginInput
                     
@@ -67,8 +71,9 @@ struct ContentView: View {
             if let image = image {
                 Image(uiImage: image)
                     .resizable()
-                    .scaledToFit()
+                    .scaledToFill()
                     .frame(width: 128, height: 128)
+                    .clipped()
                     .cornerRadius(64)
             } else {
                 Image(systemName: "person.fill")
@@ -123,10 +128,16 @@ struct ContentView: View {
             }
             print("Successfully logged in as user: \(result?.user.uid ?? "")")
             self.message = "Successfully logged in as user: \(result?.user.uid ?? "")"
+            self.didCompleteLoginProcess()
         }
     }
     
     private func createNewAccount() {
+        if self.image == nil {
+            self.message = "You must select an image"
+            return
+        }
+        
         FirebaseManager.shared.auth.createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 print("Failed to create user: \(error)")
@@ -176,13 +187,14 @@ struct ContentView: View {
                 return
             }
             print("Success")
+            self.didCompleteLoginProcess()
         }
     }
     
  }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        LoginView()
+//    }
+//}
