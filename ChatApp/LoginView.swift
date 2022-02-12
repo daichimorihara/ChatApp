@@ -44,7 +44,7 @@ struct LoginView: View {
                 .padding()
             }
             .navigationTitle(isLoginMode ? "Log In" : "Create Account")
-            .background(Color.gray.opacity(0.15))
+            .background(Color.gray.opacity(0.3))
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .fullScreenCover(isPresented: $isShowingImagePicker) {
@@ -98,6 +98,7 @@ struct LoginView: View {
         }
         .padding()
         .background(.white)
+        
     }
     
     var loginButton: some View {

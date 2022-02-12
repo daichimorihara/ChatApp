@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		421A35E427B340FD009CAB7D /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421A35E327B340FD009CAB7D /* ImagePicker.swift */; };
+		424A9B8C27B746B00047CAAC /* CreateNewMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424A9B8B27B746B00047CAAC /* CreateNewMessageView.swift */; };
+		424A9B8E27B746EF0047CAAC /* CreateNewMessageVIewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424A9B8D27B746EF0047CAAC /* CreateNewMessageVIewModel.swift */; };
+		424A9B9027B7627B0047CAAC /* ChatLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424A9B8F27B7627B0047CAAC /* ChatLogView.swift */; };
 		426E8B6B27B206310090EBF4 /* ChatAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426E8B6A27B206310090EBF4 /* ChatAppApp.swift */; };
 		426E8B6D27B206310090EBF4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426E8B6C27B206310090EBF4 /* LoginView.swift */; };
 		426E8B6F27B206310090EBF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 426E8B6E27B206310090EBF4 /* Assets.xcassets */; };
@@ -25,6 +28,9 @@
 
 /* Begin PBXFileReference section */
 		421A35E327B340FD009CAB7D /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		424A9B8B27B746B00047CAAC /* CreateNewMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewMessageView.swift; sourceTree = "<group>"; };
+		424A9B8D27B746EF0047CAAC /* CreateNewMessageVIewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewMessageVIewModel.swift; sourceTree = "<group>"; };
+		424A9B8F27B7627B0047CAAC /* ChatLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogView.swift; sourceTree = "<group>"; };
 		426E8B6727B206310090EBF4 /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		426E8B6A27B206310090EBF4 /* ChatAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAppApp.swift; sourceTree = "<group>"; };
 		426E8B6C27B206310090EBF4 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -81,6 +87,9 @@
 				427D42C727B5F1210010EFFA /* MainMessagesView.swift */,
 				427D42CC27B601F30010EFFA /* ChatUser.swift */,
 				427D42CE27B602D70010EFFA /* MainMessagesViewModel.swift */,
+				424A9B8B27B746B00047CAAC /* CreateNewMessageView.swift */,
+				424A9B8D27B746EF0047CAAC /* CreateNewMessageVIewModel.swift */,
+				424A9B8F27B7627B0047CAAC /* ChatLogView.swift */,
 			);
 			path = ChatApp;
 			sourceTree = "<group>";
@@ -175,12 +184,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				427D42CD27B601F30010EFFA /* ChatUser.swift in Sources */,
+				424A9B9027B7627B0047CAAC /* ChatLogView.swift in Sources */,
 				426E8B8027B22A6E0090EBF4 /* FirebaseManager.swift in Sources */,
 				421A35E427B340FD009CAB7D /* ImagePicker.swift in Sources */,
+				424A9B8C27B746B00047CAAC /* CreateNewMessageView.swift in Sources */,
 				426E8B6D27B206310090EBF4 /* LoginView.swift in Sources */,
 				426E8B6B27B206310090EBF4 /* ChatAppApp.swift in Sources */,
 				427D42C827B5F1210010EFFA /* MainMessagesView.swift in Sources */,
 				427D42CF27B602D70010EFFA /* MainMessagesViewModel.swift in Sources */,
+				424A9B8E27B746EF0047CAAC /* CreateNewMessageVIewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
