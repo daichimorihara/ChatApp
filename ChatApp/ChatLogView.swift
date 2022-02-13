@@ -33,37 +33,25 @@ struct ChatLogView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
     
+    static var bottomId = "bottom"
+    
     var messagesView: some View {
-        ScrollView {
-            ForEach(vm.chatMessages) { message in
-                if message.fromId == FirebaseManager.shared.auth.currentUser?.uid {
-                    HStack {
-                        Spacer()
-                        Text(message.text)
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(.blue)
-                            .cornerRadius(8)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 6)
-                } else {
-                    HStack {
-                        Text(message.text)
-                            .foregroundColor(.black)
-                            .padding()
-                            .background(.white)
-                            .cornerRadius(8)
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 6)
+        ScrollViewReader { proxy in
+            ScrollView {
+                ForEach(vm.chatMessages) { message in
+                    MessageView(message: message)
+                }
+                HStack { Spacer() }
+                .frame(height: 50)
+                .id(Self.bottomId)
+            }
+            .background(Color(.init(white: 0.9, alpha: 1)))
+            .onReceive(vm.$count) { _ in
+                withAnimation(.linear(duration: 0.4)) {
+                    proxy.scrollTo(Self.bottomId, anchor: .bottom)
                 }
             }
-            HStack { Spacer() }
-            .frame(height: 50)
         }
-        .background(Color(.init(white: 0.9, alpha: 1)))
 //        .padding(.vertical)
     }
     
@@ -88,6 +76,36 @@ struct ChatLogView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
+    }
+}
+
+struct MessageView: View {
+    let message: ChatMessage
+    
+    var body: some View {
+        if message.fromId == FirebaseManager.shared.auth.currentUser?.uid {
+            HStack {
+                Spacer()
+                Text(message.text)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(.blue)
+                    .cornerRadius(8)
+            }
+            .padding(.horizontal)
+            .padding(.top, 6)
+        } else {
+            HStack {
+                Text(message.text)
+                    .foregroundColor(.black)
+                    .padding()
+                    .background(.white)
+                    .cornerRadius(8)
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.top, 6)
+        }
     }
 }
 
