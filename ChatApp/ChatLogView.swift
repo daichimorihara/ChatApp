@@ -8,8 +8,16 @@
 import SwiftUI
 
 struct ChatLogView: View {
+    
     let chatUser: ChatUser?
-    @State private var chatText =  ""
+    
+    init(chatUser: ChatUser?) {
+        self.chatUser = chatUser
+        self.vm = .init(chatUser: chatUser)
+    }
+    
+    @ObservedObject var vm: ChatLogViewModel
+    
     
     var body: some View {
         ZStack {
@@ -27,18 +35,33 @@ struct ChatLogView: View {
     
     var messagesView: some View {
         ScrollView {
-            ForEach(0...20, id: \.self) { idx in
-                HStack {
-                    Spacer()
-                    Text("Fake Message")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(.blue)
-                        .cornerRadius(8)
+            ForEach(vm.chatMessages) { message in
+                if message.fromId == FirebaseManager.shared.auth.currentUser?.uid {
+                    HStack {
+                        Spacer()
+                        Text(message.text)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(.blue)
+                            .cornerRadius(8)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 6)
+                } else {
+                    HStack {
+                        Text(message.text)
+                            .foregroundColor(.black)
+                            .padding()
+                            .background(.white)
+                            .cornerRadius(8)
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 6)
                 }
-                .padding(.horizontal)
-                .padding(.top, 6)
             }
+            HStack { Spacer() }
+            .frame(height: 50)
         }
         .background(Color(.init(white: 0.9, alpha: 1)))
 //        .padding(.vertical)
@@ -49,11 +72,11 @@ struct ChatLogView: View {
             Image(systemName: "photo.on.rectangle")
             ZStack {
                 DescriptionPlaceholder()
-                TextEditor(text: $chatText).opacity(chatText.isEmpty ? 0.2 : 1)
+                TextEditor(text: $vm.chatText).opacity(vm.chatText.isEmpty ? 0.2 : 1)
             }
             .frame(height: 40)
             Button {
-                
+                vm.handleSend()
             } label: {
                 Text("Send")
                     .foregroundColor(.white)
