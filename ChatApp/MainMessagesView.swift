@@ -43,11 +43,10 @@ struct MainMessagesView: View {
             WebImage(url: URL(string: vm.chatUser?.profileImageUrl ?? ""))
                 .resizable()
                 .scaledToFill()
-                .frame(width: 50, height: 50)
+                .frame(width: 58, height: 58)
                 .clipped()
-                .cornerRadius(50)
-                .overlay(RoundedRectangle(cornerRadius: 45)
-                            .stroke(.black, lineWidth: 1))
+                .cornerRadius(58)
+                .overlay(RoundedRectangle(cornerRadius: 58).stroke(.black, lineWidth: 1))
             
 //            Image(systemName: "person.fill")
 //                .font(.system(size: 40))
@@ -55,15 +54,16 @@ struct MainMessagesView: View {
             VStack(alignment: .leading, spacing: 4) {
 
                 Text(vm.chatUser?.username ?? "Unknown")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                 HStack {
                     Circle()
                         .fill()
                         .foregroundColor(.green)
-                        .frame(width: 16, height: 16)
+                        .frame(width: 14, height: 14)
                     
                     Text("online")
                         .foregroundColor(.secondary)
+                        .font(.system(size: 14))
                 }
             }
             Spacer()
@@ -87,26 +87,29 @@ struct MainMessagesView: View {
     
     var mainBody: some View {
         ScrollView {
-            ForEach(1...20, id: \.self) { idx in
+            ForEach(vm.recentMessages) { recentMessage in
                 NavigationLink(destination: Text("y")) {
                     VStack {
-                        HStack {
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 32))
-                                .padding(8)
-                                .overlay(RoundedRectangle(cornerRadius: 32)
-                                            .stroke(lineWidth: 2)
-                                            
-                                
-                                )
+                        HStack(spacing: 12) {
+                            WebImage(url: URL(string: recentMessage.profileImageUrl))
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 58, height: 58)
+                                .clipped()
+                                .cornerRadius(58)
+                                .overlay(RoundedRectangle(cornerRadius: 58).stroke(.black, lineWidth: 1))
                             
-                            VStack(alignment: .leading) {
-                                Text("Username")
-                                    .font(.system(size: 16, weight: .bold))
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(recentMessage.username)
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.primary)
                                     
-                                Text("Message sent to user")
+                                Text(recentMessage.text)
+                                    .multilineTextAlignment(.leading)
+                                    .lineLimit(2)
                                     .font(.system(size: 14))
                                     .foregroundColor(.secondary)
+                                
                             }
                             Spacer()
                             Text("22d")

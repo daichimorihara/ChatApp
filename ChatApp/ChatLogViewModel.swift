@@ -7,6 +7,7 @@
 
 import Foundation
 import Firebase
+import simd
 
 class ChatLogViewModel: ObservableObject {
     @Published var chatText = ""
@@ -72,8 +73,6 @@ class ChatLogViewModel: ObservableObject {
                 return
             }
             print("Successfully saved current user sending message")
-            self.chatText = ""
-            self.count += 1
         }
         
         let recipientDocument = FirebaseManager.shared.firestore.collection("messages").document(toId).collection(fromId).document()
@@ -85,7 +84,79 @@ class ChatLogViewModel: ObservableObject {
                 return
             }
             print("Recipient saved data as well")
+            
+            self.persistRecentMessage()
+            
+            // self.chatText = ""
+            self.count += 1
+            
         }
+    }
+    
+    func persistRecentMessage() {
+        guard let chatUser = chatUser else { return }
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+        guard let toId = self.chatUser?.uid else { return }
+        
+        let document = FirebaseManager.shared.firestore
+            .collection("recent_messages")
+            .document(uid)
+            .collection("messages")
+            .document(toId)
+        
+        let data = ["fromId": uid,
+                    "toId": toId,
+                    "text": self.chatText,
+                    "timestamp": Timestamp(),
+                    "email": chatUser.email,
+                    "profileImageUrl": chatUser.profileImageUrl
+        ] as [String : Any]
+        
+        document.setData(data) { error in
+            if let error = error {
+                print("Failed to save recent message: \(error)")
+                return
+            }
+        }
+        guard let currentUser = FirebaseManager.shared.auth.currentUser else { return }
+        
+        FirebaseManager.shared.firestore
+            .collection("users")
+            .document(currentUser.uid)
+            .getDocument() { querySnapshot, error in
+                if let error = error {
+                    print("failed to fetch current user's data: \(error)")
+                    return
+                }
+                let dataDescription = querySnapshot?.data()
+                
+                
+                let recipientData = ["fromId": uid,
+                                     "toId": toId,
+                                     "text": self.chatText,
+                                     "timestamp": Timestamp(),
+                                     "email": currentUser.email ?? "",
+                                     "profileImageUrl": dataDescription?["profileImageUrl"] ?? ""
+                ] as [String : Any]
+                
+                FirebaseManager.shared.firestore
+                    .collection("recent_messages")
+                    .document(toId)
+                    .collection("messages")
+                    .document(uid)
+                    .setData(recipientData) { error in
+                        if let error = error {
+                            print("Failed to save recipient recent message: \(error)")
+                            return
+                        }
+                        print("Recipient get recent message too")
+                    }
+
+            }
+        
+
+        
+        
     }
     
 }
