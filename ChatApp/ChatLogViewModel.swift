@@ -40,8 +40,16 @@ class ChatLogViewModel: ObservableObject {
                 }
                 snapshot.documentChanges.forEach { change in
                     if change.type == .added {
-                        let data = change.document.data()
-                        self.chatMessages.append(.init(docuemntId: change.document.documentID, data: data))
+//                        let data = change.document.data()
+//               self.chatMessages.append(.init(docuemntId: change.document.documentID, data: data))
+                        do {
+                            if let newMessage = try change.document.data(as: ChatMessage.self) {
+                                self.chatMessages.append(newMessage)
+                            }
+                        } catch {
+                            print(error)
+                        }
+                 
                     }
                 }
                 DispatchQueue.main.async {
@@ -61,36 +69,28 @@ class ChatLogViewModel: ObservableObject {
         print(chatText)
         guard let fromId = FirebaseManager.shared.auth.currentUser?.uid else { return }
         guard let toId = chatUser?.uid else { return }
-        
-        let messageData = ["fromId": fromId, "toId": toId, "text": chatText, "timestamp": Timestamp()] as [String : Any]
-        
+
         let document = FirebaseManager.shared.firestore.collection("messages").document(fromId).collection(toId).document()
         
-        document.setData(messageData) { error in
-            if let error = error {
-                print(error)
-                self.message = "Failed to save message into Firestore: \(error)"
-                return
-            }
-            print("Successfully saved current user sending message")
-        }
+        let msgData = ChatMessage(id: document.documentID, fromId: fromId, toId: toId, text: chatText, timestamp: Timestamp())
         
+        do {
+            try document.setData(from: msgData)
+        } catch {
+            print(error)
+        }
+
         let recipientDocument = FirebaseManager.shared.firestore.collection("messages").document(toId).collection(fromId).document()
         
-        recipientDocument.setData(messageData) { error in
-            if let error = error {
-                print(error)
-                self.message = "Failed to save message into Firestore: \(error)"
-                return
-            }
-            print("Recipient saved data as well")
-            
-            self.persistRecentMessage()
-            
-            // self.chatText = ""
-            self.count += 1
-            
+        let recipientData = ChatMessage(id: recipientDocument.documentID, fromId: fromId, toId: toId, text: chatText, timestamp: Timestamp())
+        
+        do {
+            try recipientDocument.setData(from: recipientData)
+        } catch {
+            print(error)
         }
+        self.persistRecentMessage()
+        self.count += 1
     }
     
     func persistRecentMessage() {
@@ -104,19 +104,21 @@ class ChatLogViewModel: ObservableObject {
             .collection("messages")
             .document(toId)
         
-        let data = ["fromId": uid,
-                    "toId": toId,
-                    "text": self.chatText,
-                    "timestamp": Timestamp(),
-                    "email": chatUser.email,
-                    "profileImageUrl": chatUser.profileImageUrl
-        ] as [String : Any]
+//        let data = ["fromId": uid,
+//                    "toId": toId,
+//                    "text": self.chatText,
+//                    "timestamp": Timestamp(),
+//                    "email": chatUser.email,
+//                    "profileImageUrl": chatUser.profileImageUrl
+//        ] as [String : Any]
         
-        document.setData(data) { error in
-            if let error = error {
-                print("Failed to save recent message: \(error)")
-                return
-            }
+        let recentMessage = RecentMessage(id: document.documentID, text: self.chatText, email: chatUser.email, fromId: uid, toId: toId, profileImageUrl: chatUser.profileImageUrl, timestamp: Timestamp())
+        
+        do {
+            try document.setData(from: recentMessage)
+            
+        } catch {
+            print(error)
         }
         guard let currentUser = FirebaseManager.shared.auth.currentUser else { return }
         
@@ -131,26 +133,31 @@ class ChatLogViewModel: ObservableObject {
                 let dataDescription = querySnapshot?.data()
                 
                 
-                let recipientData = ["fromId": uid,
-                                     "toId": toId,
-                                     "text": self.chatText,
-                                     "timestamp": Timestamp(),
-                                     "email": currentUser.email ?? "",
-                                     "profileImageUrl": dataDescription?["profileImageUrl"] ?? ""
-                ] as [String : Any]
+
                 
-                FirebaseManager.shared.firestore
-                    .collection("recent_messages")
-                    .document(toId)
-                    .collection("messages")
-                    .document(uid)
-                    .setData(recipientData) { error in
-                        if let error = error {
-                            print("Failed to save recipient recent message: \(error)")
-                            return
-                        }
-                        print("Recipient get recent message too")
-                    }
+              
+                
+                let passiveDocument = FirebaseManager.shared.firestore
+                        .collection("recent_messages")
+                        .document(toId)
+                        .collection("messages")
+                        .document(uid)
+                
+                let passiveRecentMessage = RecentMessage(id: passiveDocument.documentID, text: self.chatText, email: currentUser.email ?? "", fromId: uid, toId: toId, profileImageUrl: dataDescription?["profileImageUrl"] as! String, timestamp: Timestamp())
+                
+                do {
+                    try passiveDocument.setData(from: passiveRecentMessage)
+                } catch {
+                    print(error)
+                }
+                
+//                        .setData(recipientData) { error in
+//                        if let error = error {
+//                            print("Failed to save recipient recent message: \(error)")
+//                            return
+//                        }
+//                        print("Recipient get recent message too")
+//                    }
 
             }
         

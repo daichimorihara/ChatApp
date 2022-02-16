@@ -40,11 +40,19 @@ class MainMessagesViewModel: ObservableObject {
                 querySnapshot?.documentChanges.forEach { change in
                     let docId = change.document.documentID
                     if let index = self.recentMessages.firstIndex(where: { rm in
-                        rm.documentId == docId
+                        rm.id == docId
                     }) {
                         self.recentMessages.remove(at: index)
                     }
-                    self.recentMessages.insert(.init(documentId: docId, data: change.document.data()), at: 0)
+                    do {
+                        if let rm = try change.document.data(as: RecentMessage.self) {
+                            self.recentMessages.insert(rm, at: 0)
+                        }
+                    } catch {
+                        print(error)
+                    }
+                    
+//                    self.recentMessages.insert(.init(documentId: docId, data: change.document.data()), at: 0)
                 }
             }
     }

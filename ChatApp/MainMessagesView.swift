@@ -53,7 +53,7 @@ struct MainMessagesView: View {
             
             VStack(alignment: .leading, spacing: 4) {
 
-                Text(vm.chatUser?.username ?? "Unknown")
+                Text(vm.chatUser?.email ?? "Unknown")
                     .font(.system(size: 18, weight: .bold))
                 HStack {
                     Circle()
@@ -100,7 +100,7 @@ struct MainMessagesView: View {
                                 .overlay(RoundedRectangle(cornerRadius: 58).stroke(.black, lineWidth: 1))
                             
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(recentMessage.username)
+                                Text(recentMessage.email)
                                     .font(.system(size: 18, weight: .bold))
                                     .foregroundColor(.primary)
                                     
