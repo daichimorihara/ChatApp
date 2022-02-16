@@ -40,8 +40,6 @@ class ChatLogViewModel: ObservableObject {
                 }
                 snapshot.documentChanges.forEach { change in
                     if change.type == .added {
-//                        let data = change.document.data()
-//               self.chatMessages.append(.init(docuemntId: change.document.documentID, data: data))
                         do {
                             if let newMessage = try change.document.data(as: ChatMessage.self) {
                                 self.chatMessages.append(newMessage)
@@ -103,16 +101,9 @@ class ChatLogViewModel: ObservableObject {
             .document(uid)
             .collection("messages")
             .document(toId)
+
         
-//        let data = ["fromId": uid,
-//                    "toId": toId,
-//                    "text": self.chatText,
-//                    "timestamp": Timestamp(),
-//                    "email": chatUser.email,
-//                    "profileImageUrl": chatUser.profileImageUrl
-//        ] as [String : Any]
-        
-        let recentMessage = RecentMessage(id: document.documentID, text: self.chatText, email: chatUser.email, fromId: uid, toId: toId, profileImageUrl: chatUser.profileImageUrl, timestamp: Timestamp())
+        let recentMessage = RecentMessage(id: document.documentID, text: self.chatText, email: chatUser.email, fromId: uid, toId: toId, profileImageUrl: chatUser.profileImageUrl, timestamp: Date())
         
         do {
             try document.setData(from: recentMessage)
@@ -131,39 +122,22 @@ class ChatLogViewModel: ObservableObject {
                     return
                 }
                 let dataDescription = querySnapshot?.data()
-                
-                
 
-                
-              
-                
                 let passiveDocument = FirebaseManager.shared.firestore
                         .collection("recent_messages")
                         .document(toId)
                         .collection("messages")
                         .document(uid)
                 
-                let passiveRecentMessage = RecentMessage(id: passiveDocument.documentID, text: self.chatText, email: currentUser.email ?? "", fromId: uid, toId: toId, profileImageUrl: dataDescription?["profileImageUrl"] as! String, timestamp: Timestamp())
+                let passiveRecentMessage = RecentMessage(id: passiveDocument.documentID, text: self.chatText, email: currentUser.email ?? "", fromId: uid, toId: toId, profileImageUrl: dataDescription?["profileImageUrl"] as! String, timestamp: Date())
                 
                 do {
                     try passiveDocument.setData(from: passiveRecentMessage)
                 } catch {
                     print(error)
                 }
-                
-//                        .setData(recipientData) { error in
-//                        if let error = error {
-//                            print("Failed to save recipient recent message: \(error)")
-//                            return
-//                        }
-//                        print("Recipient get recent message too")
-//                    }
 
             }
-        
-
-        
-        
     }
     
 }

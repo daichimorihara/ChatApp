@@ -100,7 +100,7 @@ struct MainMessagesView: View {
                                 .overlay(RoundedRectangle(cornerRadius: 58).stroke(.black, lineWidth: 1))
                             
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(recentMessage.email)
+                                Text(recentMessage.username)
                                     .font(.system(size: 18, weight: .bold))
                                     .foregroundColor(.primary)
                                     
@@ -112,7 +112,14 @@ struct MainMessagesView: View {
                                 
                             }
                             Spacer()
-                            Text("22d")
+                            if recentMessage.timeAgo.contains("sec") {
+                                Text("Just now")
+                                    .foregroundColor(.secondary)
+                            } else {
+                                Text(recentMessage.timeAgo)
+                                    .foregroundColor(.secondary)
+                            }
+                            
                         }
                         .padding(.horizontal)
                         Divider()
