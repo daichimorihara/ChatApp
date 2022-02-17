@@ -88,7 +88,14 @@ struct MainMessagesView: View {
     var mainBody: some View {
         ScrollView {
             ForEach(vm.recentMessages) { recentMessage in
-                NavigationLink(destination: Text("y")) {
+                Button {
+                    isShowingChatLogView.toggle()
+                    let uid = FirebaseManager.shared.auth.currentUser?.uid == recentMessage.fromId ? recentMessage.toId : recentMessage.fromId
+                    
+                    let data = ["email": recentMessage.email, "uid": uid, "profileImageUrl": recentMessage.profileImageUrl]
+
+                    self.chatUser = ChatUser(data: data)
+                } label: {
                     VStack {
                         HStack(spacing: 12) {
                             WebImage(url: URL(string: recentMessage.profileImageUrl))
@@ -109,7 +116,6 @@ struct MainMessagesView: View {
                                     .lineLimit(2)
                                     .font(.system(size: 14))
                                     .foregroundColor(.secondary)
-                                
                             }
                             Spacer()
                             if recentMessage.timeAgo.contains("sec") {
@@ -119,13 +125,13 @@ struct MainMessagesView: View {
                                 Text(recentMessage.timeAgo)
                                     .foregroundColor(.secondary)
                             }
-                            
                         }
                         .padding(.horizontal)
                         Divider()
                     }
                     .padding(.vertical, 4)
                 }
+
             }
         }
     }

@@ -31,6 +31,7 @@ struct ChatLogView: View {
         }
         .navigationTitle(chatUser?.username ?? "")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear(perform: vm.fetchMessages)
     }
     
     static var bottomId = "bottom"
@@ -47,7 +48,7 @@ struct ChatLogView: View {
             }
             .background(Color(.init(white: 0.9, alpha: 1)))
             .onReceive(vm.$count) { _ in
-                withAnimation(.linear(duration: 0.4)) {
+                withAnimation(.linear(duration: 0.1)) {
                     proxy.scrollTo(Self.bottomId, anchor: .bottom)
                 }
             }
